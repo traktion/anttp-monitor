@@ -1,0 +1,15 @@
+As an AntFTP user
+I want some basic documentation on usage, including what commands are available
+So that it is easy for me to use the application
+
+Given there are keyboard operations within the application
+When providing documentation
+Then include what keyboard commands are available
+And describe what the application is useful for
+And explain how it connects to a local AntTP instance
+
+Implementation Notes
+
+- Place any unit tests at the bottom of the same file as the associated production code
+- Increment patch version of anttp package in Cargo.toml
+- Create a copy of this issue description and save to /spec using the name of this issue as the filename (with lower underscore case, starting with the 5 char padded issue number, e.g. 00001_issue_title.txt)

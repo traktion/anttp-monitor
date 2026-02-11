@@ -25,19 +25,23 @@ cargo run
 
 The following keyboard commands are available within the application:
 
-| Key | Action |
-|-----|--------|
-| `q` | Quit the application |
-| `↑` / `k` | Move selection up |
-| `↓` / `j` | Move selection down |
-| `Enter` | View details of the selected command |
+| Key                            | Action |
+|--------------------------------|--------|
+| `q`                            | Quit the application |
+| `↑` / `k`                      | Move selection up |
+| `↓` / `j`                      | Move selection down |
+| `Enter`                        | View details of the selected command |
 | `Backspace` / `Left` / `Enter` | Close the command details view |
-| `d` | Filter: **Default** (show Waiting and Running commands) |
-| `w` | Filter: **Waiting** commands |
-| `r` | Filter: **Running** commands |
-| `c` | Filter: **Completed** commands |
-| `a` | Filter: **Aborted** commands |
-| `A` | Filter: **All** commands |
+| `d`                            | Filter: **Default** (show Waiting and Running commands) |
+| `w`                            | Filter: **Waiting** commands |
+| `r`                            | Filter: **Running** commands |
+| `c`                            | Filter: **Completed** commands |
+| `b`                            | Filter: **Aborted** commands |
+| `a`                            | Filter: **All** commands |
+
+## Screenshots
+
+
 
 ## Development
 

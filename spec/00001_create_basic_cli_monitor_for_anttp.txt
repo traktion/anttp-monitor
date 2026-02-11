@@ -1,1 +1,64 @@
-{"id":3928039496,"number":1,"state":"open","locked":false,"title":"Create basic CLI monitor for AntTP","body":"As an AntTP operator\nI want to understand which tasks are in the command queue, which are running, which failed and which terminated successfully\nSo that I can understand how AntTP is performing\n\nGiven \u0026#39;top\u0026#39; is an existing classic Unix CLI utility for showing what processes are running, with their resource usage\nWhen building AntTP monitor\nThen take inspiration from \u0026#39;top\u0026#39;, but instead of showing processes, show the commands queued in AntTP\nAnd use Rust as the language using a standard directory structure\nAnd use Ratatui library to build the TUI\nAnd call the executable anttpmon\n\nGiven AntTP has a gRPC endpoint for listing commands\nWhen integrating AntTP monitor with AntTP\nThen retrieve the proto file from https://raw.githubusercontent.com/traktion/AntTP/refs/heads/master/proto/command.proto\nAnd attempt to connect to AntTp using gRPC over http://localhost:18887\n\nGiven there should be a default view\nWhen launching\nThen show all waiting or running commands by default\nAnd provide vertical and horizontal scrolling to see all of the command and their details\nAnd include the ID (in shortened form, show first and last 3 digits, separated by .., e.g. 123..987)\nAnd include the name and state as strings\nAnd include the waiting_at, running_at and terminated_at (which are epoch values) as which are rendered as the number of seconds difference from the current time (or \u0026#39;-\u0026#39; if null/empty)\n\nGiven there should be an extended view window\nWhen a row / command is selected with cursor keys and \u0026#39;enter\u0026#39; is pressed to select a command\nThen an overlay window should render, with the complete details of the command\nAnd this includes ID (full format), name, state, waiting_at, running_at, terminated_at\nAnd also the properties, which should be listed as key/value pairs\nAnd pressing \u0026#39;enter\u0026#39; again or the \u0026#39;back\u0026#39; cursor should close the extended view window \n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;c\u0026#39; is pressed\nThen show all of the \u0026#39;completed\u0026#39; commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;a\u0026#39; is pressed\nThen show all of the \u0026#39;aborted\u0026#39; commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;r\u0026#39; is pressed\nThen show all of the \u0026#39;running\u0026#39; commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;w\u0026#39; is pressed\nThen show all of the \u0026#39;waiting\u0026#39; commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;a\u0026#39; is pressed\nThen show all of the commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;d\u0026#39; is pressed\nThen show all of the default view of commands in the main window\n\nGiven there should be multiple modes which can be selected through key presses\nWhen \u0026#39;q\u0026#39; is pressed\nThen quit the application gracefully\n\nImplementation Notes\n\n- Increment patch version of anttp package in Cargo.toml\n- Create a copy of this issue description and save to /spec using the name of this issue as the filename (with lower underscore case, starting with the 5 char padded issue number, e.g. 00001_issue_title.txt)\n- Create basic unit tests for new code to validate behaviour","author_association":"OWNER","user":{"login":"traktion","id":12068792,"node_id":"MDQ6VXNlcjEyMDY4Nzky","avatar_url":"https://avatars.githubusercontent.com/u/12068792?v=4","html_url":"https://github.com/traktion","gravatar_id":"","type":"User","site_admin":false,"url":"https://api.github.com/users/traktion","events_url":"https://api.github.com/users/traktion/events{/privacy}","following_url":"https://api.github.com/users/traktion/following{/other_user}","followers_url":"https://api.github.com/users/traktion/followers","gists_url":"https://api.github.com/users/traktion/gists{/gist_id}","organizations_url":"https://api.github.com/users/traktion/orgs","received_events_url":"https://api.github.com/users/traktion/received_events","repos_url":"https://api.github.com/users/traktion/repos","starred_url":"https://api.github.com/users/traktion/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/traktion/subscriptions"},"labels":[{"id":10187430882,"url":"https://api.github.com/repos/traktion/anttp-monitor/labels/enhancement","name":"enhancement","color":"a2eeef","description":"New feature or request","default":true,"node_id":"LA_kwDOROExmM8AAAACXzfb4g"}],"assignee":{"login":"traktion","id":12068792,"node_id":"MDQ6VXNlcjEyMDY4Nzky","avatar_url":"https://avatars.githubusercontent.com/u/12068792?v=4","html_url":"https://github.com/traktion","gravatar_id":"","type":"User","site_admin":false,"url":"https://api.github.com/users/traktion","events_url":"https://api.github.com/users/traktion/events{/privacy}","following_url":"https://api.github.com/users/traktion/following{/other_user}","followers_url":"https://api.github.com/users/traktion/followers","gists_url":"https://api.github.com/users/traktion/gists{/gist_id}","organizations_url":"https://api.github.com/users/traktion/orgs","received_events_url":"https://api.github.com/users/traktion/received_events","repos_url":"https://api.github.com/users/traktion/repos","starred_url":"https://api.github.com/users/traktion/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/traktion/subscriptions"},"comments":0,"created_at":"2026-02-11T18:33:01Z","updated_at":"2026-02-11T18:40:47Z","url":"https://api.github.com/repos/traktion/anttp-monitor/issues/1","html_url":"https://github.com/traktion/anttp-monitor/issues/1","comments_url":"https://api.github.com/repos/traktion/anttp-monitor/issues/1/comments","events_url":"https://api.github.com/repos/traktion/anttp-monitor/issues/1/events","labels_url":"https://api.github.com/repos/traktion/anttp-monitor/issues/1/labels{/name}","repository_url":"https://api.github.com/repos/traktion/anttp-monitor","reactions":{"total_count":0,"+1":0,"-1":0,"laugh":0,"confused":0,"heart":0,"hooray":0,"rocket":0,"eyes":0,"url":"https://api.github.com/repos/traktion/anttp-monitor/issues/1/reactions"},"assignees":[{"login":"traktion","id":12068792,"node_id":"MDQ6VXNlcjEyMDY4Nzky","avatar_url":"https://avatars.githubusercontent.com/u/12068792?v=4","html_url":"https://github.com/traktion","gravatar_id":"","type":"User","site_admin":false,"url":"https://api.github.com/users/traktion","events_url":"https://api.github.com/users/traktion/events{/privacy}","following_url":"https://api.github.com/users/traktion/following{/other_user}","followers_url":"https://api.github.com/users/traktion/followers","gists_url":"https://api.github.com/users/traktion/gists{/gist_id}","organizations_url":"https://api.github.com/users/traktion/orgs","received_events_url":"https://api.github.com/users/traktion/received_events","repos_url":"https://api.github.com/users/traktion/repos","starred_url":"https://api.github.com/users/traktion/starred{/owner}{/repo}","subscriptions_url":"https://api.github.com/users/traktion/subscriptions"}],"node_id":"I_kwDOROExmM7qISBI"}
+As an AntTP operator
+I want to understand which tasks are in the command queue, which are running, which failed and which terminated successfully
+So that I can understand how AntTP is performing
+
+Given 'top' is an existing classic Unix CLI utility for showing what processes are running, with their resource usage
+When building AntTP monitor
+Then take inspiration from 'top', but instead of showing processes, show the commands queued in AntTP
+And use Rust as the language using a standard directory structure
+And use Ratatui library to build the TUI
+And call the executable anttpmon
+
+Given AntTP has a gRPC endpoint for listing commands
+When integrating AntTP monitor with AntTP
+Then retrieve the proto file from https://raw.githubusercontent.com/traktion/AntTP/refs/heads/master/proto/command.proto
+And attempt to connect to AntTp using gRPC over http://localhost:18887
+
+Given there should be a default view
+When launching
+Then show all waiting or running commands by default
+And provide vertical and horizontal scrolling to see all of the command and their details
+And include the ID (in shortened form, show first and last 3 digits, separated by .., e.g. 123..987)
+And include the name and state as strings
+And include the waiting_at, running_at and terminated_at (which are epoch values) as which are rendered as the number of seconds difference from the current time (or '-' if null/empty)
+
+Given there should be an extended view window
+When a row / command is selected with cursor keys and 'enter' is pressed to select a command
+Then an overlay window should render, with the complete details of the command
+And this includes ID (full format), name, state, waiting_at, running_at, terminated_at
+And also the properties, which should be listed as key/value pairs
+And pressing 'enter' again or the 'back' cursor should close the extended view window 
+
+Given there should be multiple modes which can be selected through key presses
+When 'c' is pressed
+Then show all of the 'completed' commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'a' is pressed
+Then show all of the 'aborted' commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'r' is pressed
+Then show all of the 'running' commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'w' is pressed
+Then show all of the 'waiting' commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'A' is pressed
+Then show all of the commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'd' is pressed
+Then show all of the default view of commands in the main window
+
+Given there should be multiple modes which can be selected through key presses
+When 'q' is pressed
+Then quit the application gracefully
+
+Implementation Notes
+
+- Increment patch version of anttp package in Cargo.toml
+- Create a copy of this issue description and save to /spec using the name of this issue as the filename (with lower underscore case, starting with the 5 char padded issue number, e.g. 00001_issue_title.txt)
+- Create basic unit tests for new code to validate behaviour

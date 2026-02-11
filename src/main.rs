@@ -57,13 +57,16 @@ impl App {
     fn filtered_commands(&self) -> Vec<&Command> {
         self.commands
             .iter()
-            .filter(|c| match self.filter_mode {
-                FilterMode::Default => c.state == "waiting" || c.state == "running",
-                FilterMode::Waiting => c.state == "waiting",
-                FilterMode::Running => c.state == "running",
-                FilterMode::Completed => c.state == "completed",
-                FilterMode::Aborted => c.state == "aborted",
-                FilterMode::All => true,
+            .filter(|c| {
+                let state = c.state.to_ascii_lowercase();
+                match self.filter_mode {
+                    FilterMode::Default => state == "waiting" || state == "running",
+                    FilterMode::Waiting => state == "waiting",
+                    FilterMode::Running => state == "running",
+                    FilterMode::Completed => state == "completed",
+                    FilterMode::Aborted => state == "aborted",
+                    FilterMode::All => true,
+                }
             })
             .collect()
     }
@@ -283,7 +286,7 @@ fn ui(f: &mut Frame, app: &mut App) {
             FilterMode::All => "All",
         }
     )))
-    .highlight_style(selected_style)
+    .row_highlight_style(selected_style)
     .highlight_symbol(">> ");
 
     f.render_stateful_widget(t, rects[0], &mut app.table_state);

@@ -1,0 +1,55 @@
+As an AntTP operator
+I want to only show the time waiting in each state
+So that I can understand how long a command waited, how long it was running and how long ago it terminated or aborted
+
+Given there is a state change when the state is changed from empty/null to an epoch time (in milliseconds)
+When a state change occurs
+Then stop the prior state counter, by subtracting the old state time from the new state time
+And render the time in seconds.milliseconds (e.g. 1.1234)
+
+Given that these state time changes should apply to all screens
+When the changes are applied
+Then both the primary and extended details window will reflect the state changes and running times
+
+Implementation Notes
+
+- Increment patch version of anttp package in Cargo.toml
+- Create a copy of this issue description and save to /spec using the name of this issue as the filename (with lower underscore case, starting with the 5 char padded issue number, e.g. 00001_issue_title.txt)
+- Create basic unit tests for new code to validate behaviour
+
+Example states:
+
+waiting -> running -> completed
+
+Example time logic:
+
+current time: 1770846698
+waiting_at: 1770836575 
+running_at:
+terminated_at:
+
+waiting: 10.123
+running:
+completed:
+
+--
+
+current time: 1770840000
+waiting_at: 1770810000 
+running_at: 1770820000
+terminated_at:
+
+waiting: 10.000
+running: 20.000
+completed:
+
+--
+
+current time: 1770850000
+waiting_at: 1770810000 
+running_at: 1770820000
+terminated_at: 1770830000
+
+waiting: 10.000
+running: 10.000
+completed: 20.000

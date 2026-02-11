@@ -127,15 +127,42 @@ fn format_id(id: &str) -> String {
     }
 }
 
-fn format_time(epoch: Option<u64>) -> String {
-    match epoch {
-        Some(e) if e > 0 => {
-            let now = Utc::now().timestamp() as i64;
-            let diff = now - (e as i64);
-            format!("{}s", diff)
+fn format_duration_ms(ms: u64) -> String {
+    let secs = ms as f64 / 1000.0;
+    format!("{secs:.3}")
+}
+
+fn compute_durations(waiting_at: Option<u64>, running_at: Option<u64>, terminated_at: Option<u64>, now_ms: u64) -> (String, String, String) {
+    // Waiting duration
+    let waiting_str = match waiting_at.filter(|w| *w > 0) {
+        Some(w) => {
+            let end = running_at.filter(|r| *r > 0).unwrap_or(now_ms);
+            let dur = end.saturating_sub(w);
+            format_duration_ms(dur)
         }
-        _ => "-".to_string(),
-    }
+        None => "-".to_string(),
+    };
+
+    // Running duration
+    let running_str = match running_at.filter(|r| *r > 0) {
+        Some(r) => {
+            let end = terminated_at.filter(|t| *t > 0).unwrap_or(now_ms);
+            let dur = end.saturating_sub(r);
+            format_duration_ms(dur)
+        }
+        None => "-".to_string(),
+    };
+
+    // Completed/Aborted ago
+    let completed_str = match terminated_at.filter(|t| *t > 0) {
+        Some(t) => {
+            let dur = now_ms.saturating_sub(t);
+            format_duration_ms(dur)
+        }
+        None => "-".to_string(),
+    };
+
+    (waiting_str, running_str, completed_str)
 }
 
 #[tokio::main]
@@ -242,7 +269,7 @@ fn ui(f: &mut Frame, app: &mut App) {
 
     let selected_style = Style::default().add_modifier(Modifier::REVERSED);
     let normal_style = Style::default().bg(Color::Blue);
-    let header_cells = ["ID", "Name", "State", "Waiting", "Running", "Terminated"]
+    let header_cells = ["ID", "Name", "State", "Waiting", "Running", "Completed/Aborted"]
         .iter()
         .map(|h| Cell::from(*h).style(Style::default().fg(Color::Yellow)));
     let header = Row::new(header_cells)
@@ -251,14 +278,21 @@ fn ui(f: &mut Frame, app: &mut App) {
         .bottom_margin(1);
 
     let filtered = app.filtered_commands();
+    let now_ms = (Utc::now().timestamp_millis()) as u64;
     let rows: Vec<Row> = filtered.iter().map(|item| {
+        let (wait_str, run_str, comp_str) = compute_durations(
+            if item.waiting_at > 0 { Some(item.waiting_at) } else { None },
+            item.running_at,
+            item.terminated_at,
+            now_ms,
+        );
         let cells = vec![
             Cell::from(format_id(&item.id)),
             Cell::from(item.name.clone()),
             Cell::from(item.state.clone()),
-            Cell::from(format_time(Some(item.waiting_at))),
-            Cell::from(format_time(item.running_at)),
-            Cell::from(format_time(item.terminated_at)),
+            Cell::from(wait_str),
+            Cell::from(run_str),
+            Cell::from(comp_str),
         ];
         Row::new(cells).height(1)
     }).collect();
@@ -269,9 +303,9 @@ fn ui(f: &mut Frame, app: &mut App) {
             Constraint::Length(10),
             Constraint::Min(20),
             Constraint::Length(10),
-            Constraint::Length(10),
-            Constraint::Length(10),
-            Constraint::Length(10),
+            Constraint::Length(12),
+            Constraint::Length(12),
+            Constraint::Length(18),
         ],
     )
     .header(header)
@@ -310,7 +344,7 @@ fn ui(f: &mut Frame, app: &mut App) {
                     Constraint::Length(1), // State
                     Constraint::Length(1), // Waiting
                     Constraint::Length(1), // Running
-                    Constraint::Length(1), // Terminated
+                    Constraint::Length(1), // Completed/Aborted
                     Constraint::Length(1), // Empty
                     Constraint::Length(1), // Properties Header
                     Constraint::Min(0),    // Properties list
@@ -328,16 +362,23 @@ fn ui(f: &mut Frame, app: &mut App) {
             Paragraph::new(format!("State: {}", cmd.state)),
             details_layout[2],
         );
+        let now_ms = (Utc::now().timestamp_millis()) as u64;
+        let (wait_str, run_str, comp_str) = compute_durations(
+            if cmd.waiting_at > 0 { Some(cmd.waiting_at) } else { None },
+            cmd.running_at,
+            cmd.terminated_at,
+            now_ms,
+        );
         f.render_widget(
-            Paragraph::new(format!("Waiting At: {}", format_time(Some(cmd.waiting_at)))),
+            Paragraph::new(format!("Waiting: {} s", wait_str)),
             details_layout[3],
         );
         f.render_widget(
-            Paragraph::new(format!("Running At: {}", format_time(cmd.running_at))),
+            Paragraph::new(format!("Running: {} s", run_str)),
             details_layout[4],
         );
         f.render_widget(
-            Paragraph::new(format!("Terminated At: {}", format_time(cmd.terminated_at))),
+            Paragraph::new(format!("Completed/Aborted: {} s", comp_str)),
             details_layout[5],
         );
 
@@ -394,11 +435,35 @@ mod tests {
     }
 
     #[test]
-    fn test_format_time() {
-        let now = Utc::now().timestamp() as u64;
-        assert_eq!(format_time(Some(now)), "0s");
-        assert_eq!(format_time(Some(now - 10)), "10s");
-        assert_eq!(format_time(None), "-");
-        assert_eq!(format_time(Some(0)), "-");
+    fn test_compute_durations_examples() {
+        // Example 1
+        let now = 1_770_846_698u64; // current time (ms epoch)
+        let waiting_at = Some(1_770_836_575u64);
+        let running_at = None;
+        let terminated_at = None;
+        let (w, r, c) = compute_durations(waiting_at, running_at, terminated_at, now);
+        assert_eq!(w, "10.123");
+        assert_eq!(r, "-");
+        assert_eq!(c, "-");
+
+        // Example 2
+        let now = 1_770_840_000u64;
+        let waiting_at = Some(1_770_810_000u64);
+        let running_at = Some(1_770_820_000u64);
+        let terminated_at = None;
+        let (w, r, c) = compute_durations(waiting_at, running_at, terminated_at, now);
+        assert_eq!(w, "10.000");
+        assert_eq!(r, "20.000");
+        assert_eq!(c, "-");
+
+        // Example 3
+        let now = 1_770_850_000u64;
+        let waiting_at = Some(1_770_810_000u64);
+        let running_at = Some(1_770_820_000u64);
+        let terminated_at = Some(1_770_830_000u64);
+        let (w, r, c) = compute_durations(waiting_at, running_at, terminated_at, now);
+        assert_eq!(w, "10.000");
+        assert_eq!(r, "10.000");
+        assert_eq!(c, "20.000");
     }
 }

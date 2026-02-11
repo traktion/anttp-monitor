@@ -242,11 +242,11 @@ async fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::R
                         app.filter_mode = FilterMode::Completed;
                         app.table_state.select(Some(0));
                     }
-                    KeyCode::Char('a') => {
+                    KeyCode::Char('b') => {
                         app.filter_mode = FilterMode::Aborted;
                         app.table_state.select(Some(0));
                     }
-                    KeyCode::Char('A') => {
+                    KeyCode::Char('a') => {
                         app.filter_mode = FilterMode::All;
                         app.table_state.select(Some(0));
                     }

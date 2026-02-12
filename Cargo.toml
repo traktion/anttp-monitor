@@ -2,6 +2,14 @@
 name = "anttpmon"
 version = "0.1.4"
 edition = "2024"
+authors = ["Paul Green"]
+description = "AntTP Monitor is like 'top' for AntTP, showing command status"
+readme = "README.md"
+repository = "https://github.com/traktion/anttp-monitor"
+license = "Apache-2.0"
+keywords = ["anttp", "top", "monitor", "autonomi", "http"]
+categories = ["web-programming", "web-programming::http-server", "command-line-utilities"]
+exclude = [".github", ".gitignore", "target/"]
 
 [[bin]]
 name = "anttpmon"
